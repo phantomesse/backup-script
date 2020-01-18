@@ -8,6 +8,7 @@ import filecmp
 # variables defined for coloring printed text
 __red = '\033[31m'
 __green = '\033[32m'
+__yellow = '\033[33m'
 __blue = '\033[34m'
 __cyan = '\033[36m'
 __colorend = '\033[00m'
@@ -59,10 +60,35 @@ def backup(originalFolderPath, replicaFolderPath):
       print('- updating %s%s%s' % (__blue, replicaFilePath, __colorend),
           end = ' ')
       __copyFile(originalFilePath, replicaFilePath)
-  
+
   if nothingChanged:
     print('%sCongrats! Your replica is already up-to-date!%s'
           % (__green, __colorend))
+
+  # Recursively iterate through the replica folder.
+  extraneousFolders = []
+  extraneousFiles = []
+  for root, _, fileNames in os.walk(replicaFolderPath):
+    originalRoot = root.replace(replicaFolderPath, originalFolderPath, 1)
+
+    # Check if this is a folder that is not in the original folder.
+    if not os.path.isdir(originalRoot): extraneousFolders.append(root)
+
+    for fileName in fileNames:
+      originalFilePath = originalRoot + '/' + fileName
+      replicaFilePath = root + '/' + fileName
+      if not os.path.exists(originalFilePath):
+        extraneousFiles.append(replicaFilePath)
+  if len(extraneousFolders) > 0:
+    print('%s\nextraneous folders in %s:%s'
+          % (__yellow, replicaFolderPath, __colorend))
+    for folder in extraneousFolders:
+      print('- %s%s%s' % (__cyan, folder, __colorend))
+  if len(extraneousFiles) > 0:
+    print('%s\nextraneous files in %s:%s'
+          % (__yellow, replicaFolderPath, __colorend))
+    for fileName in extraneousFiles:
+      print('- %s%s%s' % (__blue, fileName, __colorend))
 
 # Add command line argument flags to get the original and replica parent folder
 # paths and get the original and replica folder paths.
@@ -72,4 +98,6 @@ parser.add_argument('-o', '--original', required=True,
 parser.add_argument('-r', '--replica', required=True,
         help='path to the replica parent folder')
 args = parser.parse_args()
+
+# Execute the backup.
 backup(args.original, args.replica)
