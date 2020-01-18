@@ -19,3 +19,8 @@ paths.
 Whatever you do, don't delete anything from the original directory.
 
 Make this a python script because Aftab is stupid.
+
+Usage:
+```
+./backup.py -o <original folder path> -r <replica folder path>
+```
