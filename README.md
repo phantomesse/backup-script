@@ -13,9 +13,9 @@ The goal is to make sure that the replica directory always has the same stuff
 as the first one.
 
 If the replica directory has extra stuff that the original directory doesn't
-have, then leave it alone.
+have, then leave it alone. Print out a report of these extra things with full
+paths.
 
 Whatever you do, don't delete anything from the original directory.
 
 Make this a python script because Aftab is stupid.
-
